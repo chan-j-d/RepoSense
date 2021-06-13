@@ -310,14 +310,22 @@ public class ArgsParser {
             TimeUtil.verifySinceDateIsValid(sinceDate);
             TimeUtil.verifyDatesRangeIsCorrect(sinceDate, untilDate);
 
-            if (reportFolderPath != null && !reportFolderPath.equals(EMPTY_PATH)
-                    && configFolderPath.equals(DEFAULT_CONFIG_PATH) && locations == null) {
+            boolean isAutomaticallyLaunching = reportFolderPath != null;
+            boolean hasNonEmptyReportFolderPath = isAutomaticallyLaunching && !reportFolderPath.equals(EMPTY_PATH);
+            boolean isViewOnly = hasNonEmptyReportFolderPath
+                    && configFolderPath.equals(DEFAULT_CONFIG_PATH)
+                    && locations == null;
+
+            boolean hasNoArgumentsSpecified = args.length == 0;
+            if (isViewOnly || hasNoArgumentsSpecified) {
+                if (hasNoArgumentsSpecified) {
+                    reportFolderPath = Paths.get(ArgsParser.DEFAULT_REPORT_NAME);
+                }
                 return new ViewCliArguments(reportFolderPath);
             }
 
-            boolean isAutomaticallyLaunching = reportFolderPath != null;
 
-            if (isAutomaticallyLaunching && !reportFolderPath.equals(EMPTY_PATH)) {
+            if (hasNonEmptyReportFolderPath) {
                 logger.info(String.format("Ignoring argument '%s' for --view.", reportFolderPath.toString()));
             }
 
