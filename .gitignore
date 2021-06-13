@@ -4,6 +4,8 @@
 /target/
 .gradle/
 
+RepoSense.jar
+
 repos/
 logs/
 out/
