@@ -16,6 +16,8 @@ import reposense.model.RepoConfiguration;
 public class GitLog {
     public static final String COMMIT_INFO_DELIMITER = "(?m)^>>>COMMIT INFO<<<\\n";
 
+    public static final String MERGE_INFO_DELIMITER = "(?m)^>>>MERGE INFO<<<\\n";
+
     private static final String PRETTY_FORMAT_STRING =
             "\">>>COMMIT INFO<<<%n|%H|%n|%aN|%n|%aE|%n|%cI|%n|%s|%n|%w(0,4,4)%b%w(0,0,0)|%n|%D|\"";
     private static final String PRETTY_FORMAT_WITH_MERGE_INFO_STRING =
@@ -74,7 +76,7 @@ public class GitLog {
     /**
      * Returns raw information of merge commit hashes and respective parent commits.
      */
-    public static String getMergeCommits(RepoConfiguration config, String filePath) {
+    public static String getMergeCommits(RepoConfiguration config) {
         Path rootPath = Paths.get(config.getRepoRoot());
 
         String command = "git log --merges -i";
