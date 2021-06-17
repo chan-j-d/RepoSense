@@ -1,5 +1,7 @@
 package reposense.git;
 
+import reposense.model.Author;
+
 import static reposense.system.CommandRunner.runCommand;
 
 import java.nio.file.Path;
@@ -119,5 +121,16 @@ public class GitRevList {
         Path rootPath = Paths.get(root);
         String output = runCommand(rootPath, revListCommand);
         return output == null || output.trim().isEmpty();
+    }
+
+    public static List<String> getCommitsDifferenceBetween(String root,
+            String inBranch, String notInBranch, Author author) {
+
+        Path rootPath = Paths.get(root);
+
+        String revListCommand = "git rev-list ";
+        revListCommand += GitUtil.convertToFilterAuthorArgs(author);
+        revListCommand += " --no merges";
+        return Arrays.asList(runCommand(rootPath, revListCommand).split("\n"));
     }
 }
