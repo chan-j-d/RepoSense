@@ -8,5 +8,8 @@ public class MergeInfo {
         this.info = info;
     }
 
+    public String getInfo() {
+        return info;
+    }
 
 }

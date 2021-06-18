@@ -124,12 +124,11 @@ public class GitRevList {
     }
 
     public static List<String> getCommitsDifferenceBetween(String root,
-            String inBranch, String notInBranch, Author author) {
+            String inBranch, String notInBranch) {
 
         Path rootPath = Paths.get(root);
 
         String revListCommand = "git rev-list ";
-        revListCommand += GitUtil.convertToFilterAuthorArgs(author);
         revListCommand += " --no merges";
         return Arrays.asList(runCommand(rootPath, revListCommand).split("\n"));
     }
