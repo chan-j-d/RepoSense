@@ -208,7 +208,9 @@ public class CommitResultAggregator {
                     PersonalizedMerge newPersonalizedMerge = new PersonalizedMerge(
                             currentMerge.getHash(),
                             currentMerge.getMessageTitle(),
-                            list);
+                            list,
+                            list.get(list.size() - 1).getTime(),
+                            list.get(0).getTime());
                     if (v == null) {
                         return new ArrayList<>(List.of(newPersonalizedMerge));
                     } else {

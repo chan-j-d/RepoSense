@@ -1,17 +1,23 @@
 package reposense.commits.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PersonalizedMerge {
     private final String hash;
     private final String messageTitle;
     private final List<CommitResult> newCommits;
+    private final Date startDate;
+    private final Date endDate;
 
-    public PersonalizedMerge(String hash, String messageTitle, List<CommitResult> newCommits) {
+    public PersonalizedMerge(String hash, String messageTitle, List<CommitResult> newCommits,
+            Date startDate, Date endDate) {
         this.hash = hash;
         this.messageTitle = messageTitle;
         this.newCommits = new ArrayList<>(newCommits);
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public String getHash() {
