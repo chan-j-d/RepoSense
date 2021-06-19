@@ -2,9 +2,7 @@ package reposense.commits;
 
 import java.util.List;
 
-import reposense.commits.model.CommitContributionSummary;
-import reposense.commits.model.CommitInfo;
-import reposense.commits.model.CommitResult;
+import reposense.commits.model.*;
 import reposense.model.RepoConfiguration;
 
 /**
@@ -20,6 +18,9 @@ public class CommitsReporter {
 
         List<CommitResult> commitResults = CommitInfoAnalyzer.analyzeCommits(commitInfos, config);
 
-        return CommitResultAggregator.aggregateCommitResults(config, commitResults);
+        List<MergeInfo> mergeInfos = MergeInfoExtractor.extractMergeInfos(config);
+        List<MergeResult> mergeResults = MergeInfoAnalyzer.analyzeMerges(mergeInfos, config);
+
+        return CommitResultAggregator.aggregateCommitResults(config, commitResults, mergeResults);
     }
 }

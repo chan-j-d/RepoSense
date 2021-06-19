@@ -8,10 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import reposense.commits.model.AuthorDailyContribution;
-import reposense.commits.model.CommitContributionSummary;
-import reposense.commits.model.CommitResult;
+import reposense.commits.model.*;
 import reposense.model.Author;
 import reposense.model.RepoConfiguration;
 import reposense.parser.SinceDateArgumentType;
@@ -29,7 +28,7 @@ public class CommitResultAggregator {
      * Returns the {@code CommitContributionSummary} generated from aggregating the {@code commitResults}.
      */
     public static CommitContributionSummary aggregateCommitResults(
-            RepoConfiguration config, List<CommitResult> commitResults) {
+            RepoConfiguration config, List<CommitResult> commitResults, List<MergeResult> mergeResults) {
         Date startDate;
         startDate = (config.getSinceDate().equals(SinceDateArgumentType.ARBITRARY_FIRST_COMMIT_DATE))
                 ? getStartOfDate(getStartDate(commitResults), config.getZoneId())
@@ -47,10 +46,14 @@ public class CommitResultAggregator {
         Map<Author, Float> authorContributionVariance =
                 calcAuthorContributionVariance(authorDailyContributionsMap, startDate, lastDate, config.getZoneId());
 
+        Map<Author, List<PersonalizedMerge>> authorPersonalizedMergeMap =
+                analyzePersonalizedMergeMap(mergeResults, commitResults);
+
         return new CommitContributionSummary(
                 config.getAuthorDisplayNameMap(),
                 authorDailyContributionsMap,
-                authorContributionVariance);
+                authorContributionVariance,
+                authorPersonalizedMergeMap);
     }
 
     /**
@@ -172,4 +175,51 @@ public class CommitResultAggregator {
         }
         return min;
     }
+
+    private static Map<Author, List<PersonalizedMerge>> analyzePersonalizedMergeMap(
+            List<MergeResult> mergeResults, List<CommitResult> commitResults) {
+
+        Map<Author, List<PersonalizedMerge>> authorPersonalizedMergeMap = new HashMap<>();
+
+        Map<String, CommitResult> hashToCommitObjectMap = commitResults.stream()
+                .collect(Collectors.toMap(CommitResult::getHash, x -> x));
+
+        for (MergeResult currentMerge : mergeResults) {
+            List<String> commitHashes = currentMerge.getNewCommits();
+            Map<Author, List<CommitResult>> perMergeAuthorToCommitMap = new HashMap<>();
+
+            commitHashes.stream()
+                    .forEach(commitHash -> {
+                        CommitResult commitResult = hashToCommitObjectMap.get(commitHash);
+                        Author author = commitResult.getAuthor();
+                        perMergeAuthorToCommitMap.compute(author, (k, v) -> {
+                            if (v == null) {
+                                return new ArrayList<>(List.of(commitResult));
+                            } else {
+                                v.add(commitResult);
+                                return v;
+                            }
+                        });
+                    });
+
+            perMergeAuthorToCommitMap.forEach((author, list) ->
+                authorPersonalizedMergeMap.compute(author, (k, v) -> {
+                    PersonalizedMerge newPersonalizedMerge = new PersonalizedMerge(
+                            currentMerge.getHash(),
+                            currentMerge.getMessageTitle(),
+                            list);
+                    if (v == null) {
+                        return new ArrayList<>(List.of(newPersonalizedMerge));
+                    } else {
+                        v.add(newPersonalizedMerge);
+                        return v;
+                    }
+                })
+            );
+
+        }
+
+        return authorPersonalizedMergeMap;
+    }
+
 }

@@ -6,9 +6,9 @@ import java.util.List;
 public class PersonalizedMerge {
     private final String hash;
     private final String messageTitle;
-    private final List<String> newCommits;
+    private final List<CommitResult> newCommits;
 
-    public PersonalizedMerge(String hash, String messageTitle, List<String> newCommits) {
+    public PersonalizedMerge(String hash, String messageTitle, List<CommitResult> newCommits) {
         this.hash = hash;
         this.messageTitle = messageTitle;
         this.newCommits = new ArrayList<>(newCommits);
@@ -22,7 +22,7 @@ public class PersonalizedMerge {
         return messageTitle;
     }
 
-    public List<String> getNewCommits() {
+    public List<CommitResult> getNewCommits() {
         return newCommits;
     }
 
