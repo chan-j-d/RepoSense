@@ -6,6 +6,7 @@ import reposense.git.GitRevList;
 import reposense.model.RepoConfiguration;
 import reposense.system.LogsManager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -32,6 +33,10 @@ public class MergeInfoAnalyzer {
     public static MergeResult analyzeMerge(MergeInfo mergeInfo, RepoConfiguration config) {
         String info = mergeInfo.getInfo();
         String[] elements = info.split("\n");
+        elements = Arrays.stream(elements)
+                .filter(element -> !element.isEmpty())
+                .map(MergeInfoAnalyzer::trimLeadingAndEndingIndicator)
+                .toArray(String[]::new);
         String hash = elements[INDEX_HASH];
 
         String[] parentHashes = elements[INDEX_PARENT_HASHES].split(" ");
@@ -43,6 +48,10 @@ public class MergeInfoAnalyzer {
 
         return new MergeResult(hash, mainParentHash, otherParentHash, title, newCommits);
 
+    }
+
+    private static String trimLeadingAndEndingIndicator(String string) {
+        return string.substring(1, string.length() - 1);
     }
 
     private static List<String> getNewCommits(RepoConfiguration config,

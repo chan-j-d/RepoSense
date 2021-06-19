@@ -129,7 +129,17 @@ public class GitRevList {
         Path rootPath = Paths.get(root);
 
         String revListCommand = "git rev-list ";
-        revListCommand += " --no merges";
+        revListCommand += " --no-merges";
+        revListCommand += getExcludedBranchString(inBranch) + getIncludedBranchString(notInBranch);
         return Arrays.asList(runCommand(rootPath, revListCommand).split("\n"));
     }
+
+    private static String getExcludedBranchString(String branchString) {
+        return " ^" + branchString;
+    }
+
+    private static String getIncludedBranchString(String branchString) {
+        return " " + branchString;
+    }
+
 }

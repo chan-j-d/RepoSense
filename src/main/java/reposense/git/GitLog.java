@@ -80,7 +80,7 @@ public class GitLog {
         Path rootPath = Paths.get(config.getRepoRoot());
 
         String command = "git log --merges -i";
-        command += " --first-parent " + config.getRepoRoot();
+        command += " --first-parent " + config.getBranch();
         command += " --pretty=format:" + PRETTY_FORMAT_WITH_MERGE_INFO_STRING;
 
         return runCommand(rootPath, command);
