@@ -9,6 +9,7 @@ import java.util.Map;
 import reposense.authorship.model.AuthorshipSummary;
 import reposense.commits.model.AuthorDailyContribution;
 import reposense.commits.model.CommitContributionSummary;
+import reposense.commits.model.PersonalizedMerge;
 import reposense.model.Author;
 import reposense.model.FileType;
 
@@ -20,6 +21,7 @@ public class CommitReportJson {
     private final Map<Author, LinkedHashMap<FileType, Integer>> authorFileTypeContributionMap;
     private final Map<Author, Float> authorContributionVariance;
     private final Map<Author, String> authorDisplayNameMap;
+    private final Map<Author, List<PersonalizedMerge>> authorPersonalizedMergeMap;
 
     /**
      * Constructor to construct an empty commit report with the author's display name as {@code displayName}.
@@ -38,6 +40,9 @@ public class CommitReportJson {
 
         authorDisplayNameMap = new HashMap<>();
         authorDisplayNameMap.put(emptyAuthor, displayName);
+
+        authorPersonalizedMergeMap = new HashMap<>();
+        authorPersonalizedMergeMap.put(emptyAuthor, Collections.emptyList());
     }
 
     public CommitReportJson(CommitContributionSummary commitSummary, AuthorshipSummary authorshipSummary) {
@@ -45,5 +50,6 @@ public class CommitReportJson {
         authorFileTypeContributionMap = authorshipSummary.getAuthorFileTypeContributionMap();
         authorContributionVariance = commitSummary.getAuthorContributionVariance();
         authorDisplayNameMap = commitSummary.getAuthorDisplayNameMap();
+        authorPersonalizedMergeMap = commitSummary.getAuthorPersonalizedMergeMap();
     }
 }
