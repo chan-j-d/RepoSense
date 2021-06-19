@@ -182,7 +182,7 @@ public class CommitResultAggregator {
         Map<Author, List<PersonalizedMerge>> authorPersonalizedMergeMap = new HashMap<>();
 
         Map<String, CommitResult> hashToCommitObjectMap = commitResults.stream()
-                .collect(Collectors.toMap(CommitResult::getHash, x -> x));
+                .collect(Collectors.toMap(commit -> commit.getHash().substring(1), x -> x));
 
         for (MergeResult currentMerge : mergeResults) {
             List<String> commitHashes = currentMerge.getNewCommits();
@@ -191,6 +191,7 @@ public class CommitResultAggregator {
             commitHashes.stream()
                     .forEach(commitHash -> {
                         CommitResult commitResult = hashToCommitObjectMap.get(commitHash);
+                        if (commitResult == null) return;
                         Author author = commitResult.getAuthor();
                         perMergeAuthorToCommitMap.compute(author, (k, v) -> {
                             if (v == null) {
