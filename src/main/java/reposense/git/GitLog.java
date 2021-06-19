@@ -19,7 +19,7 @@ public class GitLog {
     public static final String MERGE_INFO_DELIMITER = "(?m)^>>>MERGE INFO<<<\\n";
 
     private static final String PRETTY_FORMAT_STRING =
-            "\">>>COMMIT INFO<<<%n|%H|%n|%aN|%n|%aE|%n|%cI|%n|%s|%n|%w(0,4,4)%b%w(0,0,0)|%n|%D|\"";
+            "\">>>COMMIT INFO<<<%n%H|%n|%aN|%n|%aE|%n|%cI|%n|%s|%n|%w(0,4,4)%b%w(0,0,0)|%n|%D|\"";
     private static final String PRETTY_FORMAT_WITH_MERGE_INFO_STRING =
             "\">>>MERGE INFO<<<%n|%H|%n|%P|%n|%s|\"";
 
