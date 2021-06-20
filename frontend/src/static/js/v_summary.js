@@ -283,11 +283,16 @@ window.vSummary = {
         // filtering
         repo.users.forEach((user) => {
           if (this.isMatchSearchedUser(this.filterSearch, user)) {
-            this.getUserCommits(user, this.filterSinceDate, this.filterUntilDate);
-            if (this.filterTimeFrame === 'week') {
-              this.splitCommitsWeek(user, this.filterSinceDate, this.filterUntilDate);
+            if (this.filterTimeFrame === 'mergedbranch') {
+              this.getMergeCommits(user, this.filterSinceDate, this.filterUntilDate);
+              if (user.commits.length == 0) return;
+            } else {
+              this.getUserCommits(user, this.filterSinceDate, this.filterUntilDate);
+              if (this.filterTimeFrame === 'week') {
+                this.splitCommitsWeek(user, this.filterSinceDate, this.filterUntilDate);
+              }
+              this.updateCheckedFileTypeContribution(user);
             }
-            this.updateCheckedFileTypeContribution(user);
             res.push(user);
           }
         });
@@ -326,6 +331,8 @@ window.vSummary = {
     },
 
     getMergedRepos() {
+      console.log('this.filtered');
+      console.log(this.filtered);
       this.filtered.forEach((group, groupIndex) => {
         if (this.mergedGroups.includes(this.getGroupName(group))) {
           this.mergeGroupByIndex(this.filtered, groupIndex);
@@ -523,6 +530,36 @@ window.vSummary = {
         }
       });
 
+      return null;
+    },
+
+    getMergeCommits(user, sinceDate, untilDate) {
+      user.commits = [];
+      if (user.mergeContribution === undefined) {
+        return null;
+      }
+      const userFirst = user.mergeContribution[0];
+      const userLast = user.mergeContribution[user.mergeContribution.length - 1];
+
+      if (!userFirst) {
+        return null;
+      }
+
+      if (!sinceDate || sinceDate === 'undefined') {
+        sinceDate = userFirst.date;
+      }
+
+      if (!untilDate) {
+        untilDate = userLast.date;
+      }
+
+      user.mergeContribution.forEach((commit) => {
+        const { endDate } = commit;
+        if (endDate >= sinceDate && endDate <= untilDate) {
+          const filteredCommit = JSON.parse(JSON.stringify(commit));
+          user.commits.push(filteredCommit);
+        }
+      });
       return null;
     },
 

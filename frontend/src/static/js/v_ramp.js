@@ -24,9 +24,17 @@ window.vRamp = {
       return Math.max(newSize * this.rampSize, 0.5);
     },
     getContributionMessage(slice, commit) {
+      console.log(this.tframe);
       let title = '';
       if (this.tframe === 'commit') {
         return `[${slice.date}] ${commit.messageTitle}: ${commit.insertions} lines`;
+      }
+
+      if (this.tframe === 'mergedbranch') {
+        console.log('slice and commmit');
+        console.log(slice);
+        console.log(commit);
+        return `[${slice.date} till ${slice.endDate}] Merge: ${slice.messageTitle}`;
       }
 
       title = this.tframe === 'day'
