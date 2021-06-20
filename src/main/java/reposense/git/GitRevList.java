@@ -136,7 +136,6 @@ public class GitRevList {
         String revListCommand = "git rev-list ";
         revListCommand += " --no-merges";
         revListCommand += getExcludedBranchString(notInBranch) + getIncludedBranchString(inBranch);
-        System.out.println(revListCommand);
         List<String> listOfCommits = new ArrayList<>(
                 Arrays.asList(runCommand(rootPath, revListCommand).split("\n")));
         listOfCommits.removeAll(SEEN_COMMITS);
