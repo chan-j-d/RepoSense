@@ -213,6 +213,7 @@ window.api = {
           displayName: commits.authorDisplayNameMap[author],
           dailyCommits: commits.authorDailyContributionsMap[author],
           fileTypeContribution: commits.authorFileTypeContributionMap[author],
+          mergeContribution: commits.authorPersonalizedMergeMap[author],
         };
 
         this.setContributionOfCommitResults(obj.dailyCommits);
