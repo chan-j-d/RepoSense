@@ -331,8 +331,6 @@ window.vSummary = {
     },
 
     getMergedRepos() {
-      console.log('this.filtered');
-      console.log(this.filtered);
       this.filtered.forEach((group, groupIndex) => {
         if (this.mergedGroups.includes(this.getGroupName(group))) {
           this.mergeGroupByIndex(this.filtered, groupIndex);
