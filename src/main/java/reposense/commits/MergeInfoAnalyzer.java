@@ -46,6 +46,8 @@ public class MergeInfoAnalyzer {
         String title = elements[INDEX_MESSAGE];
         List<String> newCommits = getNewCommits(config, mainParentHash, otherParentHash);
 
+        System.out.println("parents: " + mainParentHash + ", " + otherParentHash + "\n" + newCommits);
+
         return new MergeResult(hash, mainParentHash, otherParentHash, title, newCommits);
 
     }
@@ -56,7 +58,7 @@ public class MergeInfoAnalyzer {
 
     private static List<String> getNewCommits(RepoConfiguration config,
             String mainParentHash, String otherParentHash) {
-        return GitRevList.getCommitsDifferenceBetween(config.getRepoRoot(), mainParentHash, otherParentHash);
+        return GitRevList.getCommitsDifferenceBetween(config.getRepoRoot(), otherParentHash, mainParentHash);
     }
 
 

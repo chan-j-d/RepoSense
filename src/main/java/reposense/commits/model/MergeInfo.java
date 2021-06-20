@@ -12,4 +12,8 @@ public class MergeInfo {
         return info;
     }
 
+    public String toString() {
+        return "Merge Info: " + info;
+    }
+
 }

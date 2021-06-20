@@ -186,6 +186,7 @@ public class CommitResultAggregator {
 
         for (MergeResult currentMerge : mergeResults) {
             List<String> commitHashes = currentMerge.getNewCommits();
+
             Map<Author, List<CommitResult>> perMergeAuthorToCommitMap = new HashMap<>();
 
             commitHashes.stream()

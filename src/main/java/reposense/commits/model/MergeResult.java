@@ -55,8 +55,12 @@ public class MergeResult {
         return hash.equals(otherMergeResult.hash)
                 && rootParentHash.equals(otherMergeResult.rootParentHash)
                 && otherParentHash.equals(otherMergeResult.otherParentHash)
-                && messageTitle.equals(otherMergeResult.messageTitle);
+                && messageTitle.equals(otherMergeResult.messageTitle)
+                && newCommits.equals(otherMergeResult.newCommits);
     }
 
+    public String toString() {
+        return hash + "\n" + rootParentHash + " " + otherParentHash + "\n" + messageTitle + "\n" + newCommits;
+    }
 
 }

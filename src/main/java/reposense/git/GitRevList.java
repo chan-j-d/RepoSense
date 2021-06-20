@@ -6,6 +6,7 @@ import static reposense.system.CommandRunner.runCommand;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,10 @@ import java.util.List;
 public class GitRevList {
 
     private static final String REVISION_PATH_SEPARATOR = " -- ";
+
+    // This really should not be here but there seems to be some issue with executing many `runCommand` simultaneously which causes the output
+    // of previous executions to merge with newer ones.
+    private static final List<String> SEEN_COMMITS = new ArrayList<>();
 
     /**
      * Returns the latest commit hash before {@code date}.
@@ -130,8 +135,14 @@ public class GitRevList {
 
         String revListCommand = "git rev-list ";
         revListCommand += " --no-merges";
-        revListCommand += getExcludedBranchString(inBranch) + getIncludedBranchString(notInBranch);
-        return Arrays.asList(runCommand(rootPath, revListCommand).split("\n"));
+        revListCommand += getExcludedBranchString(notInBranch) + getIncludedBranchString(inBranch);
+        System.out.println(revListCommand);
+        List<String> listOfCommits = new ArrayList<>(
+                Arrays.asList(runCommand(rootPath, revListCommand).split("\n")));
+        listOfCommits.removeAll(SEEN_COMMITS);
+        SEEN_COMMITS.addAll(listOfCommits);
+        return listOfCommits;
+
     }
 
     private static String getExcludedBranchString(String branchString) {
