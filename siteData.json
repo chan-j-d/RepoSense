@@ -61,6 +61,22 @@
       "headingKeywords": {}
     },
     {
+      "src": "dg/devOpsGuide.md",
+      "title": "DevOps Guide",
+      "headings": {
+        "devops-guide": "DevOps Guide",
+        "github-actions": "GitHub Actions",
+        "continuous-integration": "Continuous integration",
+        "report-and-documentation-previews": "Report and documentation previews",
+        "github-pages": "GitHub Pages",
+        "stale-pull-requests": "Stale pull requests",
+        "codecov": "Codecov",
+        "appveyor": "Appveyor",
+        "surge-sh": "Surge.sh"
+      },
+      "headingKeywords": {}
+    },
+    {
       "src": "dg/index.md",
       "title": "Developer guide",
       "headings": {
@@ -90,7 +106,8 @@
         "project-management": "Project management",
         "merging-prs": "Merging PRs",
         "making-a-release-on-github": "Making a release on Github",
-        "deploying-the-production-website": "Deploying the production website"
+        "deploying-the-production-website": "Deploying the production website",
+        "hot-patching-after-the-release": "Hot patching after the release"
       },
       "headingKeywords": {}
     },
@@ -100,7 +117,7 @@
       "headings": {
         "html-report": "HTML report",
         "report-architecture": "Report architecture",
-        "javascript-files": "Javascript files",
+        "javascript-and-vue-files": "Javascript and Vue files",
         "json-report-files": "JSON report files",
         "main-main-js": "Main (main.js)",
         "loading-of-report-information": "Loading of report information",
@@ -109,15 +126,15 @@
         "data-loader-api-js": "Data loader (api.js)",
         "loading-from-zip-file": "Loading from ZIP file",
         "retrieving-and-parsing-information": "Retrieving and parsing information",
-        "summary-view-v-summary-js": "Summary view (v_summary.js)",
+        "summary-view-v-summary-vue": "Summary view (v-summary.vue)",
         "initializing-the-data-for-the-ramp-charts": "Initializing the data for the ramp charts",
         "filtering-users-and-repositories": "Filtering users and repositories",
-        "authorship-view-v-authorship-js": "Authorship view (v_authorship.js)",
+        "authorship-view-v-authorship-vue": "Authorship view (v-authorship.vue)",
         "showing-relevant-information-by-authors": "Showing relevant information by authors",
-        "zoom-view-v-zoom-js": "Zoom view (v_zoom.js)",
-        "ramp-view-v-ramp-js": "Ramp view (v_ramp.js)",
+        "zoom-view-v-zoom-vue": "Zoom view (v-zoom.vue)",
+        "ramp-view-v-ramp-vue": "Ramp view (v-ramp.vue)",
         "padding-for-dates": "Padding for dates",
-        "segment-view-v-segment-js": "Segment view (v_segment.js)"
+        "segment-view-v-segment-vue": "Segment view (v-segment.vue)"
       },
       "headingKeywords": {}
     },
@@ -137,7 +154,8 @@
       "src": "dg/styleGuides.md",
       "title": "Appendix: Style guides",
       "headings": {
-        "appendix-style-guides": "Appendix: Style guides"
+        "appendix-style-guides": "Appendix: Style guides",
+        "note-on-ternary-operators": "Note on Ternary Operators:"
       },
       "headingKeywords": {}
     },
@@ -162,7 +180,9 @@
     {
       "src": "index.md",
       "title": "Home",
-      "headings": {},
+      "headings": {
+        "reposense": "RepoSense"
+      },
       "headingKeywords": {}
     },
     {
@@ -184,6 +204,7 @@
         "assets-a": "--assets, -a",
         "config-c": "--config, -c",
         "formats-f": "--formats, -f",
+        "find-previous-authors-f": "--find-previous-authors, -F",
         "help-h": "--help, -h",
         "ignore-standalone-config-i": "--ignore-standalone-config, -i",
         "last-modified-date-l": "--last-modified-date, -l",
@@ -250,15 +271,15 @@
       "title": "User guide",
       "headings": {
         "user-guide": "User guide",
-        "explore-real-life-examples": "\r\n          1 Explore real-life examples\r\n        ",
-        "generate-your-own-reports": "\r\n          2 Generate your own reports\r\n        ",
-        "share-your-reports": "\r\n          3 Share your reports\r\n        "
+        "1-explore-real-life-examples": "1 Explore real-life examples",
+        "2-generate-your-own-reports": "2 Generate your own reports",
+        "3-share-your-reports": "3 Share your reports"
       },
       "headingKeywords": {}
     },
     {
       "src": "ug/runSh.md",
-      "title": "Appendix: `run.sh` format",
+      "title": "",
       "headings": {
         "appendix-run-sh-format": "Appendix: run.sh format",
         "customizing-the-reposense-command": "Customizing the RepoSense command",
