@@ -66,63 +66,14 @@ public class ConfigSystemTest {
      */
     @Test
     public void testSinceBeginningDateRange() throws Exception {
-        runTest(getInputWithDates(SinceDateArgumentType.FIRST_COMMIT_DATE_SHORTHAND, "2/3/2019"),
-                false, false, false, false,
-                "sinceBeginningDateRange/expected");
+        System.out.println(Paths.get(".").toAbsolutePath());
+        runTest("--config ./build/resources/systemtest/ -f java adoc " +
+                        getInputWithDates(SinceDateArgumentType.FIRST_COMMIT_DATE_SHORTHAND, "2/3/2019"),
+                false, false,  FT_TEMP_DIR, "sinceBeginningDateRange/expected");
     }
 
-    @Test
-    public void test30DaysFromUntilDate() throws Exception {
-        runTest(getInputWithUntilDate("1/11/2017"), false,
-                false, false, false,
-                "30daysFromUntilDate/expected");
-    }
 
-    /**
-     * System test with a specified since date and until date, with the last modified date time in each
-     * line of code.
-     */
-    @Test
-    public void testDateRangeWithModifiedDateTimeInLines() throws Exception {
-        runTest(getInputWithDates("1/9/2017", "30/10/2017"),
-                true, false, false, false,
-                "dateRangeWithModifiedDateTimeInLines/expected");
-    }
 
-    /**
-     * System test with a specified until date and a {@link SinceDateArgumentType#FIRST_COMMIT_DATE_SHORTHAND}
-     * since date to capture from the first commit, using shallow cloning.
-     */
-    @Test
-    public void testSinceBeginningDateRangeWithShallowCloning() throws Exception {
-        runTest(getInputWithDates(SinceDateArgumentType.FIRST_COMMIT_DATE_SHORTHAND, "2/3/2019"),
-                false, true, true, false,
-                "sinceBeginningDateRangeWithShallowCloning/expected");
-    }
-
-    @Test
-    public void test30DaysFromUntilDateWithShallowCloning() throws Exception {
-        runTest(getInputWithUntilDate("1/11/2017"), false,
-                true, true, false,
-                "30daysFromUntilDateWithShallowCloning/expected");
-    }
-
-    /**
-     * System test with a specified until date and a {@link SinceDateArgumentType#FIRST_COMMIT_DATE_SHORTHAND}
-     * since date to capture from the first commit, using find previous authors.
-     */
-    @Test
-    public void testSinceBeginningDateRangeWithFindPreviousAuthors() throws Exception {
-        runTest(getInputWithDates(SinceDateArgumentType.FIRST_COMMIT_DATE_SHORTHAND, "2/3/2019"),
-                false, false, true, true,
-                "sinceBeginningDateRangeFindPreviousAuthors/expected");
-    }
-
-    @Test
-    public void test30DaysFromUntilDateWithFindPreviousAuthors() throws Exception {
-        runTest(getInputWithUntilDate("1/11/2017"), false, false, true,
-                true, "30daysFromUntilDateFindPreviousAuthors/expected");
-    }
 
     private String getInputWithUntilDate(String untilDate) {
         return String.format("--until %s", untilDate);
@@ -136,74 +87,35 @@ public class ConfigSystemTest {
      * Generates the testing report and then compared it with the expected report
      * Re-generates a normal report after the testing finished if the first report is shallow-cloned
      */
-    private void runTest(String inputDates, boolean shouldIncludeModifiedDateInLines,
-                        boolean shallowCloning, boolean shouldFreshClone, boolean findPreviousAuthors,
-                        String pathToResource) throws Exception {
-        generateReport(inputDates, shouldIncludeModifiedDateInLines, shallowCloning,
-                shouldFreshClone || !haveNormallyClonedRepo, findPreviousAuthors);
+    private void runTest(String testArgs, boolean findPreviousAuthors,
+            boolean shallowCloning, String pathToResource) throws Exception {
+        boolean isGitVersionInsufficient = findPreviousAuthors
+                && !GitVersion.isGitVersionSufficientForFindingPreviousAuthors();
+        Assert.assertFalse("Git version 2.23.0 and above necessary to run test", isGitVersionInsufficient);
+        String[] testArgsArray = testArgs.split(" ");
+        RepoSense.main(testArgsArray);
         Path actualFiles = loadResource(getClass(), pathToResource);
-        verifyAllJson(actualFiles, FT_TEMP_DIR);
+        verifyAllJson(actualFiles, FT_TEMP_DIR + "/reposense-report");
         haveNormallyClonedRepo = !shallowCloning;
     }
 
     /**
-     * Generates the testing report to be compared with expected report.
+     * Generates the testing report and then compared it with the expected report
+     * Re-generates a normal report after the testing finished if the first report is shallow-cloned
      */
-    private void generateReport(String inputDates, boolean shouldIncludeModifiedDateInLines,
-                                boolean shallowCloning, boolean shouldFreshClone,
-                                boolean findPreviousAuthors) throws Exception {
-        Path configFolder = loadResource(getClass(), "repo-config.csv").getParent();
-
-        String formats = String.join(" ", TESTING_FILE_FORMATS);
-
-        InputBuilder inputBuilder = new InputBuilder().addConfig(configFolder)
-                .addFormats(formats)
-                .addTimezone(TEST_TIME_ZONE)
-                .add(inputDates);
-
-        if (shallowCloning) {
-            inputBuilder = inputBuilder.addShallowCloning();
-        }
-        if (findPreviousAuthors) {
-            inputBuilder = inputBuilder.addFindPreviousAuthors();
-        }
-
-        String input = inputBuilder.build();
-
-        CliArguments cliArguments = ArgsParser.parse(translateCommandline(input));
-
-        List<RepoConfiguration> repoConfigs =
-                new RepoConfigCsvParser(((ConfigCliArguments) cliArguments).getRepoConfigFilePath()).parse();
-
-        repoConfigs.forEach(repoConfig -> repoConfig.setIsShallowCloningPerformed(shallowCloning));
-
-        List<AuthorConfiguration> authorConfigs =
-                new AuthorConfigCsvParser(((ConfigCliArguments) cliArguments).getAuthorConfigFilePath()).parse();
-        List<GroupConfiguration> groupConfigs =
-                new GroupConfigCsvParser(((ConfigCliArguments) cliArguments).getGroupConfigFilePath()).parse();
-        ReportConfiguration reportConfig = new ReportConfigJsonParser().parse((
-                (ConfigCliArguments) cliArguments).getReportConfigFilePath());
-
-        RepoConfiguration.merge(repoConfigs, authorConfigs);
-        RepoConfiguration.setGroupConfigsToRepos(repoConfigs, groupConfigs);
-
-        RepoConfiguration.setFormatsToRepoConfigs(repoConfigs, cliArguments.getFormats());
-        RepoConfiguration.setDatesToRepoConfigs(
-                repoConfigs, cliArguments.getSinceDate(), cliArguments.getUntilDate());
-        RepoConfiguration.setZoneIdToRepoConfigs(repoConfigs, cliArguments.getZoneId().toString());
-        RepoConfiguration.setIsLastModifiedDateIncludedToRepoConfigs(repoConfigs, shouldIncludeModifiedDateInLines);
-        RepoConfiguration.setIsFindingPreviousAuthorsPerformedToRepoConfigs(repoConfigs,
-                cliArguments.isFindingPreviousAuthorsPerformed());
-
-        boolean isGitVersionInsufficient = RepoConfiguration.isAnyRepoFindingPreviousAuthors(repoConfigs)
+    private void runTest(String testArgs, boolean findPreviousAuthors, boolean shallowCloning,
+            String outputDirectory, String pathToResource) throws Exception {
+        boolean isGitVersionInsufficient = findPreviousAuthors
                 && !GitVersion.isGitVersionSufficientForFindingPreviousAuthors();
         Assert.assertFalse("Git version 2.23.0 and above necessary to run test", isGitVersionInsufficient);
-
-        ReportGenerator.generateReposReport(repoConfigs, FT_TEMP_DIR, DUMMY_ASSETS_DIR, reportConfig,
-                TEST_REPORT_GENERATED_TIME, cliArguments.getSinceDate(), cliArguments.getUntilDate(),
-                cliArguments.isSinceDateProvided(), cliArguments.isUntilDateProvided(),
-                cliArguments.getNumCloningThreads(), cliArguments.getNumAnalysisThreads(), () ->
-                TEST_REPORT_GENERATION_TIME, cliArguments.getZoneId(), shouldFreshClone);
+        String[] testArgsArray = testArgs.split(" ");
+        String[] mainArgs = Arrays.copyOf(testArgsArray, testArgsArray.length + 2);
+        mainArgs[testArgsArray.length] = "--output";
+        mainArgs[testArgsArray.length + 1] = outputDirectory;
+        RepoSense.main(mainArgs);
+        Path actualFiles = loadResource(getClass(), pathToResource);
+        verifyAllJson(actualFiles, FT_TEMP_DIR + "/reposense-report");
+        haveNormallyClonedRepo = !shallowCloning;
     }
 
     /**
