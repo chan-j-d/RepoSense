@@ -20,21 +20,9 @@ import org.junit.Test;
 
 import reposense.git.GitVersion;
 import reposense.model.AuthorConfiguration;
-import reposense.model.CliArguments;
-import reposense.model.ConfigCliArguments;
-import reposense.model.GroupConfiguration;
-import reposense.model.RepoConfiguration;
-import reposense.model.ReportConfiguration;
-import reposense.parser.ArgsParser;
-import reposense.parser.AuthorConfigCsvParser;
-import reposense.parser.GroupConfigCsvParser;
-import reposense.parser.RepoConfigCsvParser;
-import reposense.parser.ReportConfigJsonParser;
 import reposense.parser.SinceDateArgumentType;
 import reposense.report.ErrorSummary;
-import reposense.report.ReportGenerator;
 import reposense.util.FileUtil;
-import reposense.util.InputBuilder;
 import reposense.util.TestUtil;
 
 public class ConfigSystemTest {
@@ -66,14 +54,10 @@ public class ConfigSystemTest {
      */
     @Test
     public void testSinceBeginningDateRange() throws Exception {
-        System.out.println(Paths.get(".").toAbsolutePath());
         runTest("--config ./build/resources/systemtest/ -f java adoc " +
                         getInputWithDates(SinceDateArgumentType.FIRST_COMMIT_DATE_SHORTHAND, "2/3/2019"),
                 false, false,  FT_TEMP_DIR, "sinceBeginningDateRange/expected");
     }
-
-
-
 
     private String getInputWithUntilDate(String untilDate) {
         return String.format("--until %s", untilDate);
