@@ -1,7 +1,7 @@
 // utility functions //
 window.$ = (id) => document.getElementById(id);
 window.enquery = (key, val) => `${key}=${encodeURIComponent(val)}`;
-window.BASE_URL = 'https://github.com';
+window.REPOSENSE_REPO_URL = 'https://github.com/reposense/RepoSense';
 window.HOME_PAGE_URL = 'https://reposense.org';
 window.DAY_IN_MS = (1000 * 60 * 60 * 24);
 window.HASH_DELIMITER = '~';
@@ -120,10 +120,42 @@ window.toggleNext = function toggleNext(ele) {
   parent.className = classes.join(' ');
 };
 
-window.getBaseLink = function getBaseLink(repoId) {
-  return `${window.BASE_URL}/${
-    window.REPOS[repoId].location.organization}/${
-    window.REPOS[repoId].location.repoName}`;
+window.getAuthorLink = function getAuthorLink(repoId, author) {
+  const domainName = window.REPOS[repoId].location.domainName;
+  return window.DOMAIN_URL_MAP[domainName].BASE_URL + author;
+};
+
+window.getRepoLink = function getRepoLink(repoId) {
+  const domainName = window.REPOS[repoId].location.domainName;
+  return window.DOMAIN_URL_MAP[domainName].REPO_URL
+      .replace('ORGANIZATION', window.REPOS[repoId].location.organization)
+      .replace('REPO_NAME', window.REPOS[repoId].location.repoName);
+};
+
+window.getBranchLink = function getBranchLink(repoId, branch) {
+  const domainName = window.REPOS[repoId].location.domainName;
+  return window.getRepoLink(repoId) + window.DOMAIN_URL_MAP[domainName].BRANCH
+      .replace('BRANCH', branch);
+};
+
+window.getCommitLink = function getCommitLink(repoId, commitHash) {
+  const domainName = window.REPOS[repoId].location.domainName;
+  return window.getRepoLink(repoId) + window.DOMAIN_URL_MAP[domainName].COMMIT_PATH
+      .replace('COMMIT_HASH', commitHash);
+};
+
+window.getBlameLink = function getBlameLink(repoId, branch, filepath) {
+  const domainName = window.REPOS[repoId].location.domainName;
+  return window.getRepoLink(repoId) + window.DOMAIN_URL_MAP[domainName].BLAME_PATH
+      .replace('BRANCH', branch)
+      .replace('FILE_PATH', filepath);
+};
+
+window.getHistoryLink = function getHistoryLink(repoId, branch, filepath) {
+  const domainName = window.REPOS[repoId].location.domainName;
+  return window.getRepoLink(repoId) + window.DOMAIN_URL_MAP[domainName].HISTORY_PATH
+      .replace('BRANCH', branch)
+      .replace('FILE_PATH', filepath);
 };
 
 window.getGroupName = function getGroupName(group, filterGroupSelection) {
@@ -189,6 +221,8 @@ window.api = {
     Object.entries(data.errorSet).forEach(([repoName, message]) => {
       errorMessages[repoName] = message;
     });
+
+    window.DOMAIN_URL_MAP = data.supportedDomainUrlMap;
 
     const names = [];
     data.repos.forEach((repo) => {
